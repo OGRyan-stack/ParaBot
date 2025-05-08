@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Paraphraser</title>
+</head>
+<body>
+    <h1>Text Paraphraser</h1>
+    <textarea id="inputText" rows="5" cols="50"></textarea><br>
+    <button onclick="paraphrase()">Paraphrase</button>
+    <div id="results"></div>
+
+    <script>
+        function paraphrase() {
+            const text = document.getElementById('inputText').value;
+            fetch('/paraphrase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: text})
+            })
+            .then(response => response.json())
+            .then(data => {
+                let html = '<h2>Original:</h2><p>' + data.original + '</p>';
+                html += '<h2>Paraphrases:</h2><ul>';
+                data.paraphrases.forEach(p => {
+                    html += '<li>' + p + '</li>';
+                });
+                html += '</ul>';
+                document.getElementById('results').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('results').innerHTML = 'Error: ' + error.message;
+            });
+        }
+    </script>
+</body>
+</html>
